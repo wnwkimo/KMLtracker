@@ -1,0 +1,383 @@
+:root {
+  font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color: #17211d;
+  background: #f4f6f2;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 370px 1fr;
+}
+.panel {
+  padding: 26px 24px;
+  background: #fff;
+  overflow: auto;
+  border-right: 1px solid #e5e9e4;
+  z-index: 500;
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #7a887e;
+  font-weight: 700;
+}
+.title {
+  font-size: 26px;
+  letter-spacing: -.04em;
+  margin: 7px 0 4px;
+}
+.sub {
+  font-size: 13px;
+  color: #79827c;
+  margin: 0 0 25px;
+}
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #59665e;
+  margin: 18px 0 8px;
+  display: block;
+}
+select {
+  width: 100%;
+  padding: 12px 38px 12px 12px;
+  border: 1px solid #dce3dc;
+  background: #fbfcfa;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1d2921;
+  outline: none;
+}
+select:focus {
+  border-color: #45996c;
+}
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 13px;
+}
+.stat {
+  border: 1px solid #e8ece7;
+  border-radius: 10px;
+  padding: 11px 12px;
+}
+.stat b {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 3px;
+}
+.stat span {
+  font-size: 11px;
+  color: #7c877f;
+}
+.description {
+  margin-top: 12px;
+  color: #68746c;
+  font-size: 12px;
+  line-height: 1.6;
+  min-height: 36px;
+}
+.controls {
+  margin-top: 22px;
+  padding-top: 19px;
+  border-top: 1px solid #edf0ec;
+}
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+.button {
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+}
+.play {
+  background: #18794e;
+  color: white;
+  flex: 1;
+}
+.play:hover {
+  background: #11633f;
+}
+.secondary {
+  background: #edf2ed;
+  color: #46534a;
+}
+.range-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #737e76;
+  margin: 18px 0 4px;
+}
+input[type=range] {
+  width: 100%;
+  accent-color: #18794e;
+}
+.speed-options {
+  display: flex;
+  gap: 6px;
+  margin-top: 9px;
+}
+.speed {
+  flex: 1;
+  border: 1px solid #e2e8e2;
+  border-radius: 7px;
+  padding: 7px 0;
+  background: white;
+  color: #68746c;
+  font-size: 11px;
+  cursor: pointer;
+}
+.speed.active {
+  background: #eaf5ee;
+  border-color: #a8d5b7;
+  color: #17683f;
+  font-weight: 700;
+}
+.hint {
+  font-size: 11px;
+  color: #8a948d;
+  line-height: 1.55;
+  margin-top: 23px;
+}
+.mapwrap {
+  position: relative;
+  min-width: 0;
+}
+#map {
+  height: 100%;
+  width: 100%;
+  background: #e9eee8;
+}
+.badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 400;
+  background: #ffffffed;
+  border: 1px solid #e5eae4;
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 12px;
+  color: #516056;
+  box-shadow: 0 4px 15px #26352b14;
+}
+.dot {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 5px solid #ec5d43;
+  border-radius: 50%;
+  box-shadow: 0 1px 7px #0005;
+}
+.leaflet-control-attribution {
+  font-size: 10px!important;
+}
+@media(max-width:760px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel {
+    order: 2;
+    border: 0;
+    padding: 20px;
+  }
+  .mapwrap {
+    order: 1;
+    height: 53vh;
+    min-height: 330px;
+  }
+  .title {
+    font-size: 23px;
+  }
+  .hint {
+    margin-top: 16px;
+  }
+}
+
+/* Route browser and compact selected-route summary */
+body {
+  grid-template-columns: 390px minmax(0, 1fr);
+}
+
+.panel {
+  height: 100vh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.route-heading,
+.summary-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.route-heading {
+  margin: 18px 0 9px;
+}
+
+.section-title {
+  margin: 0;
+  color: #26332b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.route-count,
+.segment-count {
+  color: #879189;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.route-list {
+  flex: 1 1 auto;
+  min-height: 120px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #e8ece7;
+  border-radius: 11px;
+  background: #fbfcfa;
+  scrollbar-color: #c9d4cb transparent;
+  scrollbar-width: thin;
+}
+
+.route-items {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+}
+
+.route-item {
+  display: flex;
+  width: 100%;
+  min-height: 38px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #4c5a50;
+  cursor: pointer;
+  text-align: left;
+}
+
+.route-item:hover {
+  background: #f0f5f0;
+}
+
+.route-item.selected {
+  background: #e9f4ec;
+  color: #17683f;
+}
+
+.route-number {
+  flex: 0 0 24px;
+  color: #98a39b;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.route-item.selected .route-number {
+  color: #43845d;
+}
+
+.route-name {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-summary {
+  flex: 0 0 auto;
+  margin-top: 15px;
+}
+
+.summary-heading {
+  margin-bottom: 8px;
+}
+
+.stats {
+  margin-top: 0;
+}
+
+.stat {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 7px;
+  padding: 9px 10px;
+}
+
+.stat b {
+  overflow: hidden;
+  margin: 0;
+  font-size: 13px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stat span {
+  flex: 0 0 auto;
+}
+
+.controls {
+  flex: 0 0 auto;
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.hint {
+  flex: 0 0 auto;
+  margin: 12px 0 0;
+}
+
+@media (max-width: 760px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .panel {
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+
+  .route-list {
+    height: 34vh;
+    min-height: 190px;
+    max-height: 360px;
+  }
+}
+
+.route-empty {
+  padding: 12px;
+  color: #8a5b43;
+  font-size: 12px;
+  line-height: 1.5;
+}

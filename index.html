@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f6f2" />
+    <meta name="description" content="瀏覽並播放 KML 軌跡路線。" />
+    <title>KML 軌跡播放器</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <aside class="panel">
+      <div class="eyebrow">TRACK EXPLORER</div>
+      <h1 class="title">KML 軌跡播放器</h1>
+      <p class="sub">瀏覽並播放你的每一段旅程</p>
+
+      <div class="route-heading">
+        <h2 class="section-title">所有軌跡</h2>
+        <span id="routeCount" class="route-count">載入中</span>
+      </div>
+      <nav class="route-list" aria-label="所有軌跡">
+        <ul id="routeList" class="route-items"></ul>
+      </nav>
+
+      <section class="route-summary" aria-label="所選路線摘要">
+        <div class="summary-heading">
+          <h2 id="selectedRouteName" class="section-title">路線摘要</h2>
+          <span id="segmentCount" class="segment-count"></span>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>距離</span><b id="distance">—</b></div>
+          <div class="stat"><span>時間</span><b id="duration">—</b></div>
+          <div class="stat"><span>均速</span><b id="averageSpeed">—</b></div>
+          <div class="stat"><span>海拔</span><b id="elevation">—</b></div>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="播放控制">
+        <div class="buttons">
+          <button id="playBtn" class="button play" type="button">▶　播放軌跡</button>
+          <button id="resetBtn" class="button secondary" type="button">重播</button>
+        </div>
+        <div class="range-row"><label for="progress">播放進度</label><span id="progressText">0%</span></div>
+        <input id="progress" type="range" min="0" max="1000" value="0" aria-label="播放進度" />
+        <div class="range-row"><span>播放速度</span><span id="speedText">1×</span></div>
+        <div class="speed-options" aria-label="播放速度">
+          <button class="speed" data-speed="0.5" type="button">0.5×</button>
+          <button class="speed active" data-speed="1" type="button">1×</button>
+          <button class="speed" data-speed="2" type="button">2×</button>
+          <button class="speed" data-speed="4" type="button">4×</button>
+          <button class="speed" data-speed="8" type="button">8×</button>
+        </div>
+      </section>
+      <p class="hint">紅點顯示目前位置。拖曳進度條可跳轉；地圖可縮放與拖曳。</p>
+    </aside>
+    <main class="mapwrap">
+      <div id="map" role="application" aria-label="軌跡地圖"></div>
+      <div class="badge" id="mapBadge">載入路線中</div>
+    </main>
+  </body>
+</html>
