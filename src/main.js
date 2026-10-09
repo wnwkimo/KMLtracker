@@ -1,5 +1,6 @@
 import { getDescriptionValue, parseKml } from './kml.js';
 import { RoutePlayer } from './route-player.js';
+import { ElevationChart } from './elevation-chart.js';
 
 const elements = {
   routeList: document.querySelector('#routeList'),
@@ -16,6 +17,7 @@ const elements = {
   progressText: document.querySelector('#progressText'),
   speedText: document.querySelector('#speedText'),
   mapBadge: document.querySelector('#mapBadge'),
+  elevationPanel: document.querySelector('#elevationPanel'),
 };
 
 function initializeMap() {
@@ -85,10 +87,15 @@ function setPlaybackButton(isPlaying) {
 
 async function start() {
   const map = initializeMap();
-  const player = new RoutePlayer(map, (progress) => {
+  const elevationChart = new ElevationChart(elements.elevationPanel);
+  const player = new RoutePlayer(map, (progress, altitude) => {
     elements.progress.value = Math.round(progress * 1000);
     elements.progressText.textContent = `${Math.round(progress * 100)}%`;
-  }, setPlaybackButton);
+    elevationChart.update(progress, altitude);
+  }, (isPlaying) => {
+    setPlaybackButton(isPlaying);
+    elevationChart.setVisible(isPlaying);
+  });
 
   try {
     const response = await fetch('./data/routes.kml');
@@ -99,6 +106,7 @@ async function start() {
     const selectRoute = (index) => {
       const route = routes[index];
       player.setRoute(route);
+      elevationChart.setRoute(route);
       updateRouteDetails(route);
       elements.progress.value = '0';
       elements.progressText.textContent = '0%';

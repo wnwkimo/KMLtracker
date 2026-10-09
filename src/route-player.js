@@ -99,11 +99,14 @@ export class RoutePlayer {
         currentPoint = {
           lat: start.lat + (end.lat - start.lat) * ratio,
           lng: start.lng + (end.lng - start.lng) * ratio,
+          altitude: Number.isFinite(start.altitude) && Number.isFinite(end.altitude)
+            ? start.altitude + (end.altitude - start.altitude) * ratio
+            : Number.isFinite(start.altitude) ? start.altitude : end.altitude,
         };
         line.push([currentPoint.lat, currentPoint.lng]);
         playedSegments.push(line);
         this.render(playedSegments, currentPoint);
-        this.onProgress(this.totalDistance ? this.currentDistance / this.totalDistance : 0);
+        this.onProgress(this.totalDistance ? this.currentDistance / this.totalDistance : 0, currentPoint?.altitude ?? null);
         return;
       }
 
@@ -112,7 +115,7 @@ export class RoutePlayer {
     }
 
     this.render(playedSegments, currentPoint);
-    this.onProgress(this.totalDistance ? this.currentDistance / this.totalDistance : 0);
+    this.onProgress(this.totalDistance ? this.currentDistance / this.totalDistance : 0, currentPoint?.altitude ?? null);
   }
 
   render(lines, point) {

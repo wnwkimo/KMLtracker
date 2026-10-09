@@ -59,6 +59,21 @@
     <main class="mapwrap">
       <div id="map" role="application" aria-label="軌跡地圖"></div>
       <div class="badge" id="mapBadge">載入路線中</div>
+      <aside id="elevationPanel" class="elevation-panel" aria-label="即時高度剖面" aria-hidden="true">
+        <div class="elevation-heading">
+          <div>
+            <div class="elevation-title">高度剖面</div>
+            <div id="elevationRange" class="elevation-range">—</div>
+          </div>
+          <strong id="elevationValue" class="elevation-value">— m</strong>
+        </div>
+        <svg class="elevation-chart" viewBox="0 0 280 90" role="img" aria-label="目前路線高度圖">
+          <line class="elevation-baseline" x1="8" y1="82" x2="272" y2="82"></line>
+          <g id="elevationProfile"></g>
+          <line id="elevationCursor" class="elevation-cursor" x1="8" y1="7" x2="8" y2="82"></line>
+          <circle id="elevationMarker" class="elevation-marker is-hidden" cx="8" cy="70" r="4"></circle>
+        </svg>
+      </aside>
     </main>
   </body>
 </html>

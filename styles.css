@@ -381,3 +381,106 @@ body {
   font-size: 12px;
   line-height: 1.5;
 }
+
+.elevation-panel {
+  position: absolute;
+  right: 18px;
+  bottom: 38px;
+  z-index: 500;
+  width: min(292px, calc(100% - 36px));
+  padding: 13px 14px 9px;
+  border: 1px solid rgb(255 255 255 / 75%);
+  border-radius: 13px;
+  background: rgb(255 255 255 / 82%);
+  box-shadow: 0 8px 28px rgb(31 47 36 / 16%);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.elevation-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.elevation-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.elevation-title {
+  color: #536258;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.elevation-range {
+  margin-top: 3px;
+  color: #89948c;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.elevation-value {
+  color: #17683f;
+  font-size: 23px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.04em;
+}
+
+.elevation-chart {
+  display: block;
+  width: 100%;
+  height: 82px;
+  margin-top: 5px;
+  overflow: visible;
+}
+
+.elevation-baseline {
+  stroke: #e4eae5;
+  stroke-width: 1;
+}
+
+.elevation-line {
+  fill: none;
+  stroke: #218253;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.elevation-area {
+  fill: #218253;
+  fill-opacity: .11;
+  stroke: none;
+}
+
+.elevation-cursor {
+  stroke: #ec765c;
+  stroke-dasharray: 3 3;
+  stroke-width: 1.25;
+}
+
+.elevation-marker {
+  fill: #fff;
+  stroke: #ec5d43;
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.elevation-marker.is-hidden {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .elevation-panel {
+    right: 12px;
+    bottom: 38px;
+    width: min(270px, calc(100% - 24px));
+  }
+}
