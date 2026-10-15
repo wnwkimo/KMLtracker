@@ -2,78 +2,186 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4f6f2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d1013" />
     <meta name="description" content="瀏覽並播放 KML 軌跡路線。" />
-    <title>KML 軌跡播放器</title>
+    <title>軌跡播放器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="./styles.css" />
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="./src/main.js"></script>
   </head>
   <body>
-    <aside class="panel">
-      <div class="eyebrow">TRACK EXPLORER</div>
-      <h1 class="title">KML 軌跡播放器</h1>
-      <p class="sub">瀏覽並播放你的每一段旅程</p>
+    <svg class="sprite" aria-hidden="true">
+      <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.6v12.8a1 1 0 0 0 1.53.85l10.2-6.4a1 1 0 0 0 0-1.7L9.53 4.75A1 1 0 0 0 8 5.6z"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><rect fill="currentColor" x="6.5" y="5" width="4" height="14" rx="1.2"/><rect fill="currentColor" x="13.5" y="5" width="4" height="14" rx="1.2"/></symbol>
+      <symbol id="i-restart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4h4"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M11.5 7l-5 5 5 5M18 7l-5 5 5 5"/></symbol>
+      <symbol id="i-forward" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 7l5 5-5 5M12.5 7l5 5-5 5"/></symbol>
+      <symbol id="i-follow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></g><circle fill="currentColor" cx="12" cy="12" r="2.2"/></symbol>
+      <symbol id="i-fit" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 5.5v13M5.5 12h13"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5.5 12h13"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></g></symbol>
+      <symbol id="i-ride" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="16.5" r="3.5"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M5.5 16.5 9 9.5h6.5l3 7M9 9.5l3.2 7h-6.7M14.5 6h2.2l-1.2 3.5"/></g></symbol>
+      <symbol id="i-hike" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M2.5 19.5 9 8.5l3.8 6.3 2.2-3.3 6.5 8z"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3.5 2.5 8.5l9.5 5 9.5-5zM2.5 13l9.5 5 9.5-5"/></symbol>
+    </svg>
 
-      <div class="route-heading">
-        <h2 class="section-title">所有軌跡</h2>
-        <span id="routeCount" class="route-count">載入中</span>
+    <aside class="sidebar">
+      <header class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg><use href="#i-hike" /></svg></div>
+        <div>
+          <h1 class="brand-title">軌跡播放器</h1>
+          <p id="libraryStats" class="brand-sub">載入中…</p>
+        </div>
+      </header>
+
+      <div class="search">
+        <svg aria-hidden="true"><use href="#i-search" /></svg>
+        <input id="search" type="search" placeholder="搜尋路線" autocomplete="off" aria-label="搜尋路線" />
       </div>
+
+      <div class="filters" role="radiogroup" aria-label="活動類型">
+        <button class="chip active" type="button" role="radio" aria-checked="true" data-filter="all">全部 <span data-count="all"></span></button>
+        <button class="chip" type="button" role="radio" aria-checked="false" data-filter="ride">
+          <svg aria-hidden="true"><use href="#i-ride" /></svg>自行車 <span data-count="ride"></span>
+        </button>
+        <button class="chip" type="button" role="radio" aria-checked="false" data-filter="hike">
+          <svg aria-hidden="true"><use href="#i-hike" /></svg>健行 <span data-count="hike"></span>
+        </button>
+      </div>
+
       <nav class="route-list" aria-label="所有軌跡">
-        <ul id="routeList" class="route-items"></ul>
+        <div id="routeList"></div>
       </nav>
 
-      <section class="route-summary" aria-label="所選路線摘要">
-        <div class="summary-heading">
-          <h2 id="selectedRouteName" class="section-title">路線摘要</h2>
-          <span id="segmentCount" class="segment-count"></span>
+      <footer class="shortcuts">
+        <span><kbd>Space</kbd> 播放</span>
+        <span><kbd>←</kbd><kbd>→</kbd> 跳轉</span>
+        <span><kbd>[</kbd><kbd>]</kbd> 速度</span>
+        <span><kbd>F</kbd> 跟隨</span>
+      </footer>
+    </aside>
+
+    <main class="stage">
+      <div id="map" role="application" aria-label="軌跡地圖"></div>
+
+      <section id="routeCard" class="route-card glass" aria-label="所選路線" hidden>
+        <div class="route-card-head">
+          <span id="routeType" class="type-badge"></span>
+          <div class="route-card-titles">
+            <h2 id="routeTitle" class="route-title">—</h2>
+            <p id="routeMeta" class="route-meta">—</p>
+          </div>
         </div>
-        <div class="stats">
-          <div class="stat"><span>距離</span><b id="distance">—</b></div>
-          <div class="stat"><span>時間</span><b id="duration">—</b></div>
-          <div class="stat"><span>均速</span><b id="averageSpeed">—</b></div>
-          <div class="stat"><span>海拔</span><b id="elevation">—</b></div>
+        <dl class="stats">
+          <div class="stat"><dt>距離</dt><dd id="statDistance">—</dd></div>
+          <div class="stat"><dt>時間</dt><dd id="statDuration">—</dd></div>
+          <div class="stat"><dt>均速</dt><dd id="statSpeed">—</dd></div>
+          <div class="stat"><dt>爬升</dt><dd id="statAscent">—</dd></div>
+          <div class="stat"><dt>最高</dt><dd id="statHighest">—</dd></div>
+        </dl>
+      </section>
+
+      <div class="map-tools">
+        <div id="basemaps" class="basemaps glass">
+          <button id="basemapToggle" class="basemaps-toggle" type="button" aria-label="切換底圖" aria-expanded="false" title="底圖">
+            <svg aria-hidden="true"><use href="#i-layers" /></svg>
+          </button>
+          <div id="basemapOptions" class="basemap-options" role="radiogroup" aria-label="底圖"></div>
+        </div>
+        <div class="tool-stack glass">
+          <button id="followBtn" class="tool" type="button" aria-pressed="false" title="跟隨目前位置 (F)" aria-label="跟隨目前位置">
+            <svg><use href="#i-follow" /></svg>
+          </button>
+          <button id="fitBtn" class="tool" type="button" title="顯示整條路線" aria-label="顯示整條路線">
+            <svg><use href="#i-fit" /></svg>
+          </button>
+          <span class="tool-divider"></span>
+          <button id="zoomInBtn" class="tool" type="button" title="放大" aria-label="放大"><svg><use href="#i-plus" /></svg></button>
+          <button id="zoomOutBtn" class="tool" type="button" title="縮小" aria-label="縮小"><svg><use href="#i-minus" /></svg></button>
+        </div>
+      </div>
+
+      <section id="dock" class="dock glass" aria-label="播放控制" hidden>
+        <div class="dock-row">
+          <div class="transport">
+            <button id="restartBtn" class="icon-btn" type="button" title="從頭開始 (Home)" aria-label="從頭開始">
+              <svg><use href="#i-restart" /></svg>
+            </button>
+            <button id="backBtn" class="icon-btn" type="button" title="倒退 (←)" aria-label="倒退">
+              <svg><use href="#i-back" /></svg>
+            </button>
+            <button id="playBtn" class="play-btn" type="button" title="播放 (Space)" aria-label="播放">
+              <svg><use id="playIcon" href="#i-play" /></svg>
+            </button>
+            <button id="forwardBtn" class="icon-btn" type="button" title="快轉 (→)" aria-label="快轉">
+              <svg><use href="#i-forward" /></svg>
+            </button>
+          </div>
+
+          <dl class="readouts" aria-live="off">
+            <div class="readout readout-wide">
+              <dt>里程</dt>
+              <dd><span id="liveDistance">0.00</span><small id="liveTotal"> / — km</small></dd>
+            </div>
+            <div class="readout">
+              <dt>經過時間</dt>
+              <dd id="liveTime">—</dd>
+            </div>
+            <div class="readout">
+              <dt>海拔</dt>
+              <dd><span id="liveAltitude">—</span><small> m</small></dd>
+            </div>
+            <div class="readout">
+              <dt>坡度</dt>
+              <dd id="liveGrade">—</dd>
+            </div>
+          </dl>
+
+          <div class="speed" role="radiogroup" aria-label="播放速度">
+            <button type="button" role="radio" data-speed="0.5">0.5×</button>
+            <button type="button" role="radio" data-speed="1">1×</button>
+            <button type="button" role="radio" data-speed="2">2×</button>
+            <button type="button" role="radio" data-speed="4">4×</button>
+            <button type="button" role="radio" data-speed="8">8×</button>
+          </div>
+        </div>
+
+        <div id="profile" class="profile">
+          <svg id="profileSvg" class="profile-svg" role="slider" tabindex="0" aria-label="播放進度與高度剖面"
+            aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <defs>
+              <linearGradient id="profileFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="var(--accent)" stop-opacity=".45" />
+                <stop offset="1" stop-color="var(--accent)" stop-opacity="0" />
+              </linearGradient>
+              <clipPath id="profileClip"><rect id="profileClipRect" x="0" y="0" width="0" height="100%" /></clipPath>
+            </defs>
+            <g id="profileGrid" class="profile-grid"></g>
+            <path id="profileArea" class="profile-area" />
+            <path id="profileLine" class="profile-line" />
+            <g clip-path="url(#profileClip)">
+              <path id="profileAreaPlayed" class="profile-area-played" />
+              <path id="profileLinePlayed" class="profile-line-played" />
+            </g>
+            <line id="profileHover" class="profile-hover" y1="0" y2="100%" />
+            <line id="profileCursor" class="profile-cursor" y1="0" y2="100%" />
+            <circle id="profileDot" class="profile-dot" r="4.5" />
+            <g id="profileAxis" class="profile-axis"></g>
+          </svg>
+          <div id="profileTip" class="profile-tip" hidden></div>
         </div>
       </section>
 
-      <section class="controls" aria-label="播放控制">
-        <div class="buttons">
-          <button id="playBtn" class="button play" type="button">▶　播放軌跡</button>
-          <button id="resetBtn" class="button secondary" type="button">重播</button>
-        </div>
-        <div class="range-row"><label for="progress">播放進度</label><span id="progressText">0%</span></div>
-        <input id="progress" type="range" min="0" max="1000" value="0" aria-label="播放進度" />
-        <div class="range-row"><span>播放速度</span><span id="speedText">1×</span></div>
-        <div class="speed-options" aria-label="播放速度">
-          <button class="speed" data-speed="0.5" type="button">0.5×</button>
-          <button class="speed active" data-speed="1" type="button">1×</button>
-          <button class="speed" data-speed="2" type="button">2×</button>
-          <button class="speed" data-speed="4" type="button">4×</button>
-          <button class="speed" data-speed="8" type="button">8×</button>
-        </div>
-      </section>
-      <p class="hint">紅點顯示目前位置。拖曳進度條可跳轉；地圖可縮放與拖曳。</p>
-    </aside>
-    <main class="mapwrap">
-      <div id="map" role="application" aria-label="軌跡地圖"></div>
-      <div class="badge" id="mapBadge">載入路線中</div>
-      <aside id="elevationPanel" class="elevation-panel" aria-label="即時高度剖面" aria-hidden="true">
-        <div class="elevation-heading">
-          <div>
-            <div class="elevation-title">高度剖面</div>
-            <div id="elevationRange" class="elevation-range">—</div>
-          </div>
-          <strong id="elevationValue" class="elevation-value">— m</strong>
-        </div>
-        <svg class="elevation-chart" viewBox="0 0 280 90" role="img" aria-label="目前路線高度圖">
-          <line class="elevation-baseline" x1="8" y1="82" x2="272" y2="82"></line>
-          <g id="elevationProfile"></g>
-          <line id="elevationCursor" class="elevation-cursor" x1="8" y1="7" x2="8" y2="82"></line>
-          <circle id="elevationMarker" class="elevation-marker is-hidden" cx="8" cy="70" r="4"></circle>
-        </svg>
-      </aside>
+      <div id="loader" class="loader" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="loaderText">載入路線中…</span>
+      </div>
     </main>
   </body>
 </html>
