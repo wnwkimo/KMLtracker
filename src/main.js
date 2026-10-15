@@ -2,6 +2,7 @@ import { parseKml } from './kml.js';
 import { RoutePlayer } from './route-player.js';
 import { ElevationChart } from './elevation-chart.js';
 import { buildTrack, gradeAt } from './track.js';
+import { installSmoothZoom } from './smooth-zoom.js';
 
 const $ = (selector) => document.querySelector(selector);
 const SPEEDS = [0.5, 1, 2, 4, 8];
@@ -114,11 +115,17 @@ function routeDistanceKm(route) {
 /* ---------- map ---------- */
 
 function initializeMap() {
-  const map = L.map('map', { zoomControl: false, zoomSnap: 0.25, wheelPxPerZoomLevel: 90 });
+  // Zooming is handled by smooth-zoom.js; zoomSnap 0 lets it settle on fractional levels.
+  const map = L.map('map', {
+    zoomControl: false,
+    zoomSnap: 0,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+  });
   map.attributionControl.setPrefix(false);
   map.setView([24.8, 121.2], 9);
-  $('#zoomInBtn').addEventListener('click', () => map.zoomIn());
-  $('#zoomOutBtn').addEventListener('click', () => map.zoomOut());
   return map;
 }
 
@@ -331,6 +338,15 @@ async function start() {
 
   setupBasemaps(map, player);
 
+  // While following, zoom around the moving marker so it stays centred throughout.
+  const zoom = installSmoothZoom(map, {
+    getAnchor: () => (player.follow && player.markerLatLng
+      ? { latLng: player.markerLatLng, point: map.getSize().divideBy(2) }
+      : null),
+  });
+  $('#zoomInBtn').addEventListener('click', () => zoom.zoomBy(1));
+  $('#zoomOutBtn').addEventListener('click', () => zoom.zoomBy(-1));
+
   const setSpeed = (speed) => {
     player.setSpeed(speed);
     document.querySelectorAll('[data-speed]').forEach((button) => {
@@ -409,6 +425,9 @@ async function start() {
       ']': () => setSpeed(SPEEDS[Math.min(SPEEDS.length - 1, speedIndex + 1)]),
       f: () => player.toggleFollow(),
       '/': () => elements.search.focus(),
+      '=': () => zoom.zoomBy(1),
+      '+': () => zoom.zoomBy(1),
+      '-': () => zoom.zoomBy(-1),
     };
     const action = actions[event.key.length === 1 ? event.key.toLowerCase() : event.key];
     if (!action) return;

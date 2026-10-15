@@ -314,7 +314,7 @@ kbd {
   font-size: 10px !important;
 }
 .leaflet-control-attribution a { color: var(--text-2) !important; }
-.route-hit { cursor: pointer; }
+.leaflet-container.over-track { cursor: pointer; }
 
 /* route card */
 

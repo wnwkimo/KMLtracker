@@ -49,7 +49,7 @@ export function buildTrack(segments) {
       if (index > 0) totalDistance += distanceBetween(segment[index - 1], point);
       points.push({ lat: point.lat, lng: point.lng, altitude: point.altitude, distance: totalDistance });
     });
-    ranges.push({ start, end: points.length - 1, latLngs: segment.map(({ lat, lng }) => [lat, lng]) });
+    ranges.push({ start, end: points.length - 1 });
   });
 
   const hasAltitude = points.some((point) => point.altitude !== null);
@@ -107,19 +107,4 @@ export function gradeAt(track, distance, window = 100) {
   const to = Math.min(track.totalDistance, distance + window / 2);
   if (to - from < 50) return null;
   return (sampleTrack(track, to).altitude - sampleTrack(track, from).altitude) / (to - from) * 100;
-}
-
-/** Distance along the track of the point nearest to a lat/lng. */
-export function nearestDistance(track, latLng) {
-  let best = null;
-  let bestScore = Infinity;
-  const cosine = Math.cos(toRadians(latLng.lat));
-  track.points.forEach((point) => {
-    const score = (point.lat - latLng.lat) ** 2 + ((point.lng - latLng.lng) * cosine) ** 2;
-    if (score < bestScore) {
-      bestScore = score;
-      best = point;
-    }
-  });
-  return best?.distance ?? 0;
 }
