@@ -14,15 +14,23 @@
 
 ## 啟動
 
-需要 Python 3。於專案目錄執行：
+需要 Node.js 18 以上，不需要安裝任何套件。於專案目錄執行：
 
 ```bash
 npm start
 ```
 
-接著瀏覽 <http://localhost:8000>。也可以直接執行 `python3 -m http.server 8000`。
+接著瀏覽 <http://localhost:8000>。請透過這個伺服器開啟，不要直接以 `file://` 開啟 HTML。地圖圖磚（Esri、OpenStreetMap、OpenTopoMap）和 Leaflet 由網路服務提供，使用時需連線。
 
-播放器透過 HTTP 載入 `data/routes.kml`，請使用本機伺服器開啟，不要直接以 `file://` 開啟 HTML。地圖圖磚（Esri、OpenStreetMap、OpenTopoMap）和 Leaflet 由網路服務提供，使用時需連線。
+## 與 Google 我的地圖同步
+
+路線來源設定在 `package.json` 的 `myMaps.mapId`（我的地圖網址中 `mid=` 後面那段）。地圖需設為「知道連結的使用者皆可檢視」。
+
+- `npm start` 時，播放器載入路線會自動向我的地圖取得最新版並存到 `data/routes.kml`，最多每 `refreshMinutes` 分鐘（預設 5）同步一次；連不上時改用本機那份，側欄會顯示同步狀態。
+- `npm run sync` 只下載、不啟動伺服器，可手動更新或排入排程。
+- 只會保存含線段的地標（路線），地圖上的地點、餐廳等點位不會寫入專案。
+
+不想同步時，刪除 `myMaps` 設定即可只使用本機的 `data/routes.kml`。
 
 ## 專案結構
 
@@ -30,6 +38,10 @@ npm start
 .
 ├── data/
 │   └── routes.kml       # 路線資料
+├── scripts/
+│   ├── server.mjs       # 本機伺服器，載入路線時自動同步
+│   ├── sync.mjs         # npm run sync：手動同步
+│   └── my-maps.mjs      # 下載我的地圖 KML 並只保留路線
 ├── src/
 │   ├── kml.js           # KML 解析與描述欄位統計
 │   ├── track.js         # 軌跡幾何：距離索引、插值取樣、方位、坡度

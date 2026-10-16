@@ -40,6 +40,7 @@ const BASEMAPS = {
 
 const elements = {
   libraryStats: $('#libraryStats'),
+  syncStatus: $('#syncStatus'),
   search: $('#search'),
   routeList: $('#routeList'),
   routeCard: $('#routeCard'),
@@ -180,6 +181,21 @@ function fitPadding() {
     paddingTopLeft: [48, Math.max(48, card.bottom - map.top + 28)],
     paddingBottomRight: [72, Math.max(48, map.bottom - dock.top + 28)],
   };
+}
+
+/** Shown only when served by scripts/server.mjs, which syncs from Google My Maps. */
+function renderSyncStatus(response) {
+  const source = response.headers.get('X-Routes-Source');
+  if (!source) return;
+  const syncedAt = response.headers.get('X-Routes-Synced-At');
+  const time = syncedAt
+    ? new Date(syncedAt).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })
+    : null;
+  elements.syncStatus.textContent = source === 'my-maps'
+    ? `已同步我的地圖 · ${time}`
+    : `無法連線我的地圖，使用本機資料${time ? `（上次同步 ${time}）` : ''}`;
+  elements.syncStatus.classList.toggle('stale', source !== 'my-maps');
+  elements.syncStatus.hidden = false;
 }
 
 /* ---------- sidebar ---------- */
@@ -440,6 +456,7 @@ async function start() {
   try {
     const response = await fetch('./data/routes.kml');
     if (!response.ok) throw new Error(`無法載入 KML（HTTP ${response.status}）`);
+    renderSyncStatus(response);
     routes = parseKml(await response.text());
     if (!routes.length) throw new Error('KML 中找不到可播放的路線');
 
