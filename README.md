@@ -34,7 +34,9 @@ npm start
 
 ## 部署到 GitHub Pages
 
-推送到 `main` 後，`.github/workflows/pages.yml` 會從我的地圖同步路線並部署到 GitHub Pages；之後每小時自動同步一次，路線有變動時會自動 commit `data/routes.kml`。也可以在 GitHub 的 Actions 頁面手動執行「Sync routes and deploy」立即更新。
+推送到 `main` 時，`.github/workflows/pages.yml` 會從我的地圖同步路線並部署到 GitHub Pages。
+
+我的地圖更新後，到 GitHub 的 **Actions → 更新路線並部署 → Run workflow** 手動執行，約一分鐘後網站就會是最新路線；路線有變動時會自動 commit `data/routes.kml`（之後在本機改程式前記得先 `git pull`）。
 
 第一次需要在 repo 的 **Settings → Pages → Build and deployment → Source** 選擇 **GitHub Actions**。
 

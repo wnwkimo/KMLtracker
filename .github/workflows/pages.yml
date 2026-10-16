@@ -1,11 +1,10 @@
-name: Sync routes and deploy
+name: 更新路線並部署
 
+# Routes are refreshed on demand: Actions → 更新路線並部署 → Run workflow.
+# Pushing code to main also redeploys (and syncs) the site.
 on:
   push:
     branches: [main]
-  schedule:
-    # Hourly; GitHub may delay scheduled runs at busy times.
-    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
