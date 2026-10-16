@@ -1,0 +1,61 @@
+name: Sync routes and deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Hourly; GitHub may delay scheduled runs at busy times.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # If My Maps is unreachable, keep deploying the committed copy.
+      - name: Sync routes from Google My Maps
+        id: sync
+        continue-on-error: true
+        run: npm run sync
+
+      - name: Commit updated routes
+        if: steps.sync.outcome == 'success'
+        run: |
+          # The sync stamps a timestamp into the file; only commit when the routes themselves changed.
+          # The fresh timestamp is still deployed, so the page shows when it last checked.
+          if git diff --quiet -I '<description>同步自' -- data/routes.kml; then
+            echo "Routes unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/routes.kml
+          git commit -m "Sync routes from Google My Maps"
+          git push
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

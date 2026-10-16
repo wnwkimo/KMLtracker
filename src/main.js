@@ -183,11 +183,15 @@ function fitPadding() {
   };
 }
 
-/** Shown only when served by scripts/server.mjs, which syncs from Google My Maps. */
-function renderSyncStatus(response) {
-  const source = response.headers.get('X-Routes-Source');
+/**
+ * scripts/server.mjs reports the sync via headers; on static hosting (GitHub Pages) fall back to
+ * the timestamp that scripts/my-maps.mjs writes into the KML.
+ */
+function renderSyncStatus(response, kmlText) {
+  const stamped = kmlText.match(/<description>同步自 Google 我的地圖 ([^<\s]+)<\/description>/)?.[1];
+  const source = response.headers.get('X-Routes-Source') ?? (stamped ? 'my-maps' : null);
   if (!source) return;
-  const syncedAt = response.headers.get('X-Routes-Synced-At');
+  const syncedAt = response.headers.get('X-Routes-Synced-At') ?? stamped;
   const time = syncedAt
     ? new Date(syncedAt).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })
     : null;
@@ -456,8 +460,9 @@ async function start() {
   try {
     const response = await fetch('./data/routes.kml');
     if (!response.ok) throw new Error(`無法載入 KML（HTTP ${response.status}）`);
-    renderSyncStatus(response);
-    routes = parseKml(await response.text());
+    const kmlText = await response.text();
+    renderSyncStatus(response, kmlText);
+    routes = parseKml(kmlText);
     if (!routes.length) throw new Error('KML 中找不到可播放的路線');
 
     routes.forEach((route) => { route.track = buildTrack(route.segments); });
